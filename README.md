@@ -18,8 +18,8 @@ public class WicketApplication extends WebApplication {
 	public void init() {
 		super.init();
     
-		// jp.try0.wicket.resource.bundle.BundleResouceManager
-		BundleResouceManager manager = new BundleResouceManager(this);
+		// jp.try0.wicket.resource.bundle.BundleResourceManager
+		BundleResourceManager manager = new BundleResourceManager(this);
 		// Can be added
 		manager.addJavaScriptResourceReference(JQueryResourceReference.getV3());
 		manager.register();
