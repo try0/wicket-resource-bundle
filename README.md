@@ -3,7 +3,7 @@
 Bundles the resources placed in the package of the annotated component into one.  
 
 WicketApplication.css ( = HomePage.css + MyPanel.css )  
-WicketApplication.js ( = MyPanel.js )  
+WicketApplication.js ( = JQuery + MyPanel.js )  
 
 
 ```java
@@ -21,7 +21,7 @@ public class WicketApplication extends WebApplication {
 		// jp.try0.wicket.resource.bundle.BundleResouceManager
 		BundleResouceManager manager = new BundleResouceManager(this);
 		// Can be added
-		// manager.addJavaScriptResourceReference(JQueryResourceReference.getV3());
+		manager.addJavaScriptResourceReference(JQueryResourceReference.getV3());
 		manager.register();
 
 	}
