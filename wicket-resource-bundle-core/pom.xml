@@ -7,5 +7,5 @@
 		<artifactId>wicket-resource-bundle-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>wicket-resource-bundle</artifactId>
+	<artifactId>wicket-resource-bundle-core</artifactId>
 </project>
