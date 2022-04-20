@@ -39,7 +39,7 @@
 
 		<dependency>
 			<groupId>jp.try0.wicket</groupId>
-			<artifactId>wicket-resource-bundle</artifactId>
+			<artifactId>wicket-resource-bundle-core</artifactId>
 			<version>${wicket-resource-bundle.version}</version>
 		</dependency>
 
