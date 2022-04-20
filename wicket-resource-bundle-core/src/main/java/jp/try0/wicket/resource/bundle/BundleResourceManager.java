@@ -25,8 +25,6 @@ import org.wicketstuff.config.MatchingResources;
 public class BundleResourceManager {
 	private static Logger logger = LoggerFactory.getLogger(BundleResourceManager.class);
 
-	private static final AnnotatedMountScanner SCANNER = new AnnotatedMountScanner();
-
 	private final Application app;
 
 	private String scanPackageName;
@@ -39,10 +37,6 @@ public class BundleResourceManager {
 
 	private final List<JavaScriptResourceReference> jsResoucereferences = new ArrayList<>();
 
-	private CssResourceReference cssKeyResource;
-
-	private JavaScriptResourceReference jsKeyResource;
-
 	/**
 	 * Constructor.
 	 * 
@@ -53,8 +47,10 @@ public class BundleResourceManager {
 	}
 
 	/**
-	 * Sets the name that scan package.
+	 * Sets the name that scan package.<br>
+	 * for use {@link AnnotatedMountScanner#getPatternForPackage(String)}.
 	 * 
+	 * @see AnnotatedMountScanner
 	 * @param scanPackageName
 	 * @return
 	 */
@@ -78,7 +74,11 @@ public class BundleResourceManager {
 	 * @return
 	 */
 	public CssResourceReference getCssKeyResource() {
-		return cssKeyResource;
+		if (!cssResoucereferences.isEmpty()) {
+			return cssResoucereferences.get(0);
+		}
+
+		return null;
 	}
 
 	/**
@@ -87,7 +87,11 @@ public class BundleResourceManager {
 	 * @return
 	 */
 	public JavaScriptResourceReference getJsKeyResource() {
-		return jsKeyResource;
+		if (!jsResoucereferences.isEmpty()) {
+			return jsResoucereferences.get(0);
+		}
+
+		return null;
 	}
 
 	/**
@@ -98,7 +102,6 @@ public class BundleResourceManager {
 	 */
 	public BundleResourceManager addCssResourceReference(CssResourceReference ref) {
 		cssResoucereferences.add(ref);
-		cssKeyResource = ref;
 		return this;
 	}
 
@@ -110,7 +113,6 @@ public class BundleResourceManager {
 	 */
 	public BundleResourceManager addJavaScriptResourceReference(JavaScriptResourceReference ref) {
 		jsResoucereferences.add(ref);
-		jsKeyResource = ref;
 		return this;
 	}
 
@@ -166,6 +168,10 @@ public class BundleResourceManager {
 
 		}
 
+		if (cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
+			return;
+		}
+		
 		// register to bundle
 		ResourceBundles bundles = app.getResourceBundles();
 		registerBundles(bundles, cssResoucereferences, jsResoucereferences);
@@ -173,7 +179,10 @@ public class BundleResourceManager {
 		// render bundle resource config
 
 		if (appendAutoResourceRenderer) {
+			CssResourceReference cssKeyResource = getCssKeyResource();
 			CssHeaderItem cssItem = cssKeyResource != null ? CssHeaderItem.forReference(cssKeyResource) : null;
+
+			JavaScriptResourceReference jsKeyResource = getJsKeyResource();
 			JavaScriptHeaderItem jsItem = jsKeyResource != null ? JavaScriptHeaderItem.forReference(jsKeyResource)
 					: null;
 
@@ -189,7 +198,8 @@ public class BundleResourceManager {
 	 */
 	private List<Class<?>> lookupComponents() {
 
-		String pattern = SCANNER.getPatternForPackage(scanPackageName);
+		AnnotatedMountScanner scanner = new AnnotatedMountScanner();
+		String pattern = scanner.getPatternForPackage(scanPackageName);
 		MatchingResources resources = new MatchingResources(pattern);
 
 		List<Class<?>> bundleTargets = resources.getAnnotatedMatches(BundleResource.class);
@@ -228,12 +238,12 @@ public class BundleResourceManager {
 		logger.info(scope.getName() + "/" + resourceName);
 
 		if (resourceName.toLowerCase().endsWith(".css")) {
-			cssResouceRefs.add(cssKeyResource = new CssResourceReference(scope, resourceName));
+			cssResouceRefs.add(new CssResourceReference(scope, resourceName));
 			return;
 		}
 
 		if (resourceName.toLowerCase().endsWith(".js")) {
-			jsResouceRefs.add(jsKeyResource = new JavaScriptResourceReference(scope, resourceName));
+			jsResouceRefs.add(new JavaScriptResourceReference(scope, resourceName));
 			return;
 		}
 

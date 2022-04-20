@@ -13,18 +13,19 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
  */
 public class BundleResourceRenderer extends Behavior {
 
-	private final CssHeaderItem cssItem;
+	private final CssHeaderItem cssBundleRenderKeyHeaderItem;
 
-	private final JavaScriptHeaderItem jsItem;
+	private final JavaScriptHeaderItem jsBundleRenderKeyHeaderItem;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param scanner
 	 */
-	public BundleResourceRenderer(CssHeaderItem cssItem, JavaScriptHeaderItem jsItem) {
-		this.cssItem = cssItem;
-		this.jsItem = jsItem;
+	public BundleResourceRenderer(CssHeaderItem cssBundleRenderKeyHeaderItem,
+			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
+		this.cssBundleRenderKeyHeaderItem = cssBundleRenderKeyHeaderItem;
+		this.jsBundleRenderKeyHeaderItem = jsBundleRenderKeyHeaderItem;
 	}
 
 	@Override
@@ -33,12 +34,12 @@ public class BundleResourceRenderer extends Behavior {
 
 		// render bundle resources
 
-		if (cssItem != null) {
-			response.render(cssItem);
+		if (cssBundleRenderKeyHeaderItem != null) {
+			response.render(cssBundleRenderKeyHeaderItem);
 		}
 
-		if (jsItem != null) {
-			response.render(jsItem);
+		if (jsBundleRenderKeyHeaderItem != null) {
+			response.render(jsBundleRenderKeyHeaderItem);
 		}
 
 	}

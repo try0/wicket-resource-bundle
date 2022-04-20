@@ -14,25 +14,26 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
  */
 public class BundleResourceAutoAppender implements IComponentInstantiationListener {
 
-	private final CssHeaderItem cssItem;
+	private final CssHeaderItem cssBundleRenderKeyHeaderItem;
 
-	private final JavaScriptHeaderItem jsItem;
+	private final JavaScriptHeaderItem jsBundleRenderKeyHeaderItem;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param scanner
 	 */
-	public BundleResourceAutoAppender(CssHeaderItem cssItem, JavaScriptHeaderItem jsItem) {
-		this.cssItem = cssItem;
-		this.jsItem = jsItem;
+	public BundleResourceAutoAppender(CssHeaderItem cssBundleRenderKeyHeaderItem,
+			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
+		this.cssBundleRenderKeyHeaderItem = cssBundleRenderKeyHeaderItem;
+		this.jsBundleRenderKeyHeaderItem = jsBundleRenderKeyHeaderItem;
 	}
 
 	@Override
 	public void onInstantiation(Component component) {
 
 		if (component instanceof Page) {
-			component.add(new BundleResourceRenderer(cssItem, jsItem));
+			component.add(new BundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem));
 		}
 
 	}
