@@ -22,8 +22,8 @@ import org.wicketstuff.config.MatchingResources;
  * @author Ryo Tsunoda
  *
  */
-public class BundleResouceManager {
-	private static Logger logger = LoggerFactory.getLogger(BundleResouceManager.class);
+public class BundleResourceManager {
+	private static Logger logger = LoggerFactory.getLogger(BundleResourceManager.class);
 
 	private static final AnnotatedMountScanner SCANNER = new AnnotatedMountScanner();
 
@@ -48,7 +48,7 @@ public class BundleResouceManager {
 	 * 
 	 * @param app
 	 */
-	public BundleResouceManager(Application app) {
+	public BundleResourceManager(Application app) {
 		this.app = app;
 	}
 
@@ -58,7 +58,7 @@ public class BundleResouceManager {
 	 * @param scanPackageName
 	 * @return
 	 */
-	public BundleResouceManager setScanPackageName(String scanPackageName) {
+	public BundleResourceManager setScanPackageName(String scanPackageName) {
 		this.scanPackageName = scanPackageName;
 		return this;
 	}
@@ -96,7 +96,7 @@ public class BundleResouceManager {
 	 * @param ref
 	 * @return
 	 */
-	public BundleResouceManager addCssResourceReference(CssResourceReference ref) {
+	public BundleResourceManager addCssResourceReference(CssResourceReference ref) {
 		cssResoucereferences.add(ref);
 		cssKeyResource = ref;
 		return this;
@@ -108,13 +108,13 @@ public class BundleResouceManager {
 	 * @param ref
 	 * @return
 	 */
-	public BundleResouceManager addJavaScriptResourceReference(JavaScriptResourceReference ref) {
+	public BundleResourceManager addJavaScriptResourceReference(JavaScriptResourceReference ref) {
 		jsResoucereferences.add(ref);
 		jsKeyResource = ref;
 		return this;
 	}
 
-	public BundleResouceManager setAppendResourceRenderer(boolean appendAutoResourceRenderer) {
+	public BundleResourceManager setAppendResourceRenderer(boolean appendAutoResourceRenderer) {
 		this.appendAutoResourceRenderer = appendAutoResourceRenderer;
 		return this;
 	}

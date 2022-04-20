@@ -4,7 +4,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.resource.JQueryResourceReference;
 
-import jp.try0.wicket.resource.bundle.BundleResouceManager;
+import jp.try0.wicket.resource.bundle.BundleResourceManager;
 
 /**
  * Application object for your web application.
@@ -33,7 +33,7 @@ public class WicketApplication extends WebApplication
 
 		// add your configuration here
 		
-		BundleResouceManager manager = new BundleResouceManager(this);
+		BundleResourceManager manager = new BundleResourceManager(this);
 		manager.addJavaScriptResourceReference(JQueryResourceReference.getV3());
 		manager.register();
 		
