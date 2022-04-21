@@ -2,7 +2,7 @@
 
 Extends resource bundling of wicket.   
 Bundles the resources placed in the package of the annotated component into one.  
-wicket-resource-bundle depends on [wicket-core](https://github.com/apache/wicket/tree/master/wicket-core) and [wicket-stuff-anotation](https://github.com/wicketstuff/core/tree/master/annotation).  
+wicket-resource-bundle depends on [wicket-core](https://github.com/apache/wicket/tree/master/wicket-core) and [wicketstuff-annotation](https://github.com/wicketstuff/core/tree/master/annotation).  
 
 WicketApplication.css ( = HomePage.css + MyPanel.css )  
 WicketApplication.js ( = JQuery + MyPanel.js )  
