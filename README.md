@@ -2,6 +2,7 @@
 
 Extends resource bundling of wicket.   
 Bundles the resources placed in the package of the annotated component into one.  
+wicket-resource-bundle depends on [wicket-core](https://github.com/apache/wicket/tree/master/wicket-core) and [wicket-stuff-anotation](https://github.com/wicketstuff/core/tree/master/annotation).  
 
 WicketApplication.css ( = HomePage.css + MyPanel.css )  
 WicketApplication.js ( = JQuery + MyPanel.js )  
@@ -33,30 +34,38 @@ public class WicketApplication extends WebApplication {
 ```java
 @BundleResource(name = "HomePage.css")
 public class HomePage extends WebPage {
-	private static final long serialVersionUID = 1L;
 
 	public HomePage(final PageParameters parameters) {
 		super(parameters);
-
 		add(new Label("version", getApplication().getFrameworkSettings().getVersion()));
-
 		add(new MyPanel("myPanel"));
-
 	}
-
+	
+	@Override
+	public void renderHead(IHeaderResponse response) {
+		super.renderHead(response);
+		response.render(CssHeaderItem.forReference(new CssResourceReference(getClass(), "HomePage.css")));
+	}
 }
 ```
 
 ```java
 @BundleResources({
-		@BundleResource(name = "MyPanel.css"),
-		@BundleResource(name = "MyPanel.js") })
+	@BundleResource(name = "MyPanel.css"),
+	@BundleResource(name = "MyPanel.js") })
 public class MyPanel extends Panel {
 
 	public MyPanel(String id) {
 		super(id);
 
 		add(new Label("pnlLabel", "MyPanel"));
+	}
+	
+	@Override
+	public void renderHead(IHeaderResponse response) {
+		super.renderHead(response);
+		response.render(CssHeaderItem.forReference(new CssResourceReference(getClass(), "MyPanel.css")));
+		response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(getClass(), "MyPanel.js")));
 	}
 }
 ```
