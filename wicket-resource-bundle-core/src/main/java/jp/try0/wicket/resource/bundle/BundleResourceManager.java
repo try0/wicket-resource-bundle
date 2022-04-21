@@ -31,7 +31,7 @@ public class BundleResourceManager {
 
 	private String bundleResourceName;
 
-	private boolean appendAutoResourceRenderer = true;
+	private boolean appendAutoResourceRenderer = false;
 
 	private final List<CssResourceReference> cssResoucereferences = new ArrayList<>();
 
