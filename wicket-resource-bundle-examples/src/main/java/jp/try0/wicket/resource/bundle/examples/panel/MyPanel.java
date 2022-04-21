@@ -2,6 +2,7 @@ package jp.try0.wicket.resource.bundle.examples.panel;
 
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.request.resource.CssResourceReference;
@@ -15,7 +16,6 @@ public class MyPanel extends Panel {
 
 	public MyPanel(String id) {
 		super(id);
-
 		add(new Label("pnlLabel", "MyPanel"));
 	}
 
@@ -24,6 +24,6 @@ public class MyPanel extends Panel {
 		super.renderHead(response);
 
 		response.render(CssHeaderItem.forReference(new CssResourceReference(getClass(), "MyPanel.css")));
-		response.render(CssHeaderItem.forReference(new JavaScriptResourceReference(getClass(), "MyPanel.js")));
+		response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(getClass(), "MyPanel.js")));
 	}
 }

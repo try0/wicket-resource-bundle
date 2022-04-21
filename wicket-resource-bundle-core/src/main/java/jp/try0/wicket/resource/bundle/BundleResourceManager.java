@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ResourceBundles;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -25,13 +26,33 @@ import org.wicketstuff.config.MatchingResources;
 public class BundleResourceManager {
 	private static Logger logger = LoggerFactory.getLogger(BundleResourceManager.class);
 
+	public static final MetaDataKey<BundleResourceManager> APP_META_DATA_KEY = new MetaDataKey<BundleResourceManager>() {
+	};
+
+	/**
+	 * Gets manager. <br>
+	 * Need to execute {@link #register()} beforehand.
+	 * 
+	 * @return
+	 */
+	public static BundleResourceManager get() {
+		if (Application.exists()) {
+			Application app = Application.get();
+			return app.getMetaData(APP_META_DATA_KEY);
+		}
+
+		return null;
+	}
+
 	private final Application app;
 
 	private String scanPackageName;
 
 	private String bundleResourceName;
 
-	private boolean appendAutoResourceRenderer = false;
+	private ResourceBundleRendererConfig rendererConfig = ResourceBundleRendererConfig.MANUAL_RENDERING;
+
+	private final List<Class<? extends Component>> resourceHolderClasses = new ArrayList<>();
 
 	private final List<CssResourceReference> cssResoucereferences = new ArrayList<>();
 
@@ -116,9 +137,28 @@ public class BundleResourceManager {
 		return this;
 	}
 
-	public BundleResourceManager setAppendResourceRenderer(boolean appendAutoResourceRenderer) {
-		this.appendAutoResourceRenderer = appendAutoResourceRenderer;
+	/**
+	 * Sets the whether or not to add behavior that render bundle resources to all
+	 * pages.
+	 * 
+	 * @param appendAutoResourceRenderer
+	 * @return
+	 */
+	public BundleResourceManager setResourceBundleRendererConfig(ResourceBundleRendererConfig rendererConfig) {
+		this.rendererConfig = rendererConfig;
 		return this;
+	}
+
+	public List<Class<? extends Component>> getResourceHolderClasses() {
+		return resourceHolderClasses;
+	}
+
+	public boolean isResourceHolderClass(Class<?> clazz) {
+		return getResourceHolderClasses().contains(clazz);
+	}
+
+	public ResourceBundleRendererConfig getRendererConfig() {
+		return rendererConfig;
 	}
 
 	/**
@@ -128,6 +168,8 @@ public class BundleResourceManager {
 	public void register() {
 
 		logger.info("Register resouces to bundle.");
+
+		app.setMetaData(APP_META_DATA_KEY, this);
 
 		Class<?> appClass = app.getClass();
 
@@ -141,6 +183,7 @@ public class BundleResourceManager {
 			bundleResourceName = appClass.getSimpleName();
 		}
 
+		// lookup components
 		List<Class<?>> targets = lookupComponents();
 		if (targets.isEmpty() && cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
 			logger.warn("No resources.");
@@ -171,24 +214,40 @@ public class BundleResourceManager {
 		if (cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
 			return;
 		}
-		
+
 		// register to bundle
 		ResourceBundles bundles = app.getResourceBundles();
 		registerBundles(bundles, cssResoucereferences, jsResoucereferences);
 
 		// render bundle resource config
 
-		if (appendAutoResourceRenderer) {
-			CssResourceReference cssKeyResource = getCssKeyResource();
-			CssHeaderItem cssItem = cssKeyResource != null ? CssHeaderItem.forReference(cssKeyResource) : null;
-
-			JavaScriptResourceReference jsKeyResource = getJsKeyResource();
-			JavaScriptHeaderItem jsItem = jsKeyResource != null ? JavaScriptHeaderItem.forReference(jsKeyResource)
-					: null;
-
-			app.getComponentInstantiationListeners().add(new BundleResourceAutoAppender(cssItem, jsItem));
+		if (rendererConfig != ResourceBundleRendererConfig.MANUAL_RENDERING) {
+			app.getComponentInstantiationListeners()
+					.add(newBundleResourceAutoAppender(getCssKeyResource(), getJsKeyResource()));
 		}
 
+	}
+
+	/**
+	 * Creates bundle resource appender.
+	 * 
+	 * @param cssKeyResource
+	 * @param jsKeyResource
+	 * @return
+	 */
+	protected BundleResourceAutoAppender newBundleResourceAutoAppender(CssResourceReference cssKeyResource,
+			JavaScriptResourceReference jsKeyResource) {
+
+		CssHeaderItem cssRenderKeyItem = null;
+		if (cssKeyResource != null) {
+			cssRenderKeyItem = CssHeaderItem.forReference(jsKeyResource);
+		}
+		JavaScriptHeaderItem jsRenderKeyItem = null;
+		if (jsKeyResource != null) {
+			jsRenderKeyItem = JavaScriptHeaderItem.forReference(jsKeyResource);
+		}
+
+		return new BundleResourceAutoAppender(cssRenderKeyItem, jsRenderKeyItem);
 	}
 
 	/**
@@ -271,5 +330,20 @@ public class BundleResourceManager {
 			bundles.addJavaScriptBundle(app.getClass(), bundleResourceName + ".js",
 					jsResouceRefs.toArray(new JavaScriptResourceReference[0]));
 		}
+	}
+
+	public static enum ResourceBundleRendererConfig {
+		/**
+		 * Add header items yourself.
+		 */
+		MANUAL_RENDERING,
+		/**
+		 * Renders bundle resource to all pages.
+		 */
+		ALL_PAGE,
+		/**
+		 * Renders only if the page contains components with bundled resources
+		 */
+		ONLY_BUNDLE_RESOURCE_HOLDER
 	}
 }
