@@ -7,6 +7,7 @@ wicket-resource-bundle depends on [wicket-core](https://github.com/apache/wicket
 WicketApplication.css ( = HomePage.css + MyPanel.css )  
 WicketApplication.js ( = JQuery + MyPanel.js )  
 
+![image](https://user-images.githubusercontent.com/17096601/164439559-289b9a0a-40ef-447b-9d67-ff7639ad49c8.png)
 
 ```java
 public class WicketApplication extends WebApplication {
