@@ -1,5 +1,6 @@
 # wicket-resource-bundle
 
+Extends resource bundling of wicket.   
 Bundles the resources placed in the package of the annotated component into one.  
 
 WicketApplication.css ( = HomePage.css + MyPanel.css )  
