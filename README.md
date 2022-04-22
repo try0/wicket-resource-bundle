@@ -70,3 +70,18 @@ public class MyPanel extends Panel {
 	}
 }
 ```
+
+Define resource dependencies
+
+
+```java
+@BundleResources({
+	@BundleResource(name = "ModalDialog.css"),
+	@BundleResource(name = "ModalDialog.js") })
+public class ModalDialog extends Panel {
+```
+
+```java
+@BundleResource(name = "ConfirmButton.js", dependencies = { ModalDialog.class })
+public class ConfirmButton extends Button {
+```
