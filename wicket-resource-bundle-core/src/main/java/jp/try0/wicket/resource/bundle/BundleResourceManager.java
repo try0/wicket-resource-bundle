@@ -188,6 +188,7 @@ public class BundleResourceManager {
 	 * Look up {@link BundleResource}, {@link BundleResources} and register them in
 	 * the {@link ResourceBundles}.
 	 */
+	@SuppressWarnings("unchecked")
 	public void register() {
 
 		logger.info("Register resouces to bundle.");
@@ -211,6 +212,10 @@ public class BundleResourceManager {
 		if (targets.isEmpty() && cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
 			logger.warn("No resources.");
 			return;
+		}
+
+		for (Class<?> target : targets) {
+			resourceHolderClasses.add((Class<? extends Component>) target);
 		}
 
 		// make resource reference
@@ -422,8 +427,9 @@ public class BundleResourceManager {
 	 * @author Ryo Tsunoda
 	 *
 	 */
-	private class DependencyComparator implements Comparator<Class<?>> {
+	static class DependencyComparator implements Comparator<Class<?>> {
 
+		static String nl = System.getProperty("line.separator");
 		private final Stack<Class<?>> stack = new Stack<>();
 
 		/**
@@ -442,11 +448,11 @@ public class BundleResourceManager {
 
 			boolean circulardependency = dependency.visited && visited.contains(dependency.clazz);
 			if (circulardependency) {
-				StringBuilder sb = new StringBuilder(dependency.clazz.getSimpleName() + "\n");
+				StringBuilder sb = new StringBuilder(dependency.clazz.getSimpleName() + nl);
 				for (ResourceDependency child : dependency.dependencies) {
 					createTreeString(child, dependency, sb, "");
 				}
-				throw new RuntimeException("Circular dependency.\n" + sb.toString());
+				throw new RuntimeException("Circular dependency." + nl + sb.toString());
 			}
 
 			visited.add(dependency.clazz);
@@ -470,10 +476,10 @@ public class BundleResourceManager {
 				String prefix) {
 
 			prefix += " ";
-			sb.append(prefix + dependency.clazz.getSimpleName() + "\n");
+			sb.append(prefix + dependency.clazz.getSimpleName() + nl);
 
 			if (error == dependency) {
-				sb.append(prefix + "↑　Cause component class.\n");
+				sb.append(prefix + "↑ Cause component class." + nl);
 				return;
 			}
 
@@ -492,7 +498,7 @@ public class BundleResourceManager {
 
 	}
 
-	private class ResourceDependency {
+	static class ResourceDependency {
 
 		/**
 		 * Component class.
