@@ -1,8 +1,15 @@
 package jp.try0.wicket.resource.bundle;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -52,7 +59,7 @@ public class BundleResourceManager {
 
 	private ResourceBundleRendererConfig rendererConfig = ResourceBundleRendererConfig.MANUAL_RENDERING;
 
-	private final List<Class<? extends Component>> resourceHolderClasses = new ArrayList<>();
+	private final Set<Class<? extends Component>> resourceHolderClasses = new HashSet<>();
 
 	private final List<CssResourceReference> cssResoucereferences = new ArrayList<>();
 
@@ -149,14 +156,30 @@ public class BundleResourceManager {
 		return this;
 	}
 
-	public List<Class<? extends Component>> getResourceHolderClasses() {
+	/**
+	 * Gets the classes of resource holder.
+	 * 
+	 * @return
+	 */
+	public Set<Class<? extends Component>> getResourceHolderClasses() {
 		return resourceHolderClasses;
 	}
 
+	/**
+	 * Whether the class has bundled resources.
+	 * 
+	 * @param clazz
+	 * @return
+	 */
 	public boolean isResourceHolderClass(Class<?> clazz) {
 		return getResourceHolderClasses().contains(clazz);
 	}
 
+	/**
+	 * Gets the render config.
+	 * 
+	 * @return
+	 */
 	public ResourceBundleRendererConfig getRendererConfig() {
 		return rendererConfig;
 	}
@@ -191,26 +214,7 @@ public class BundleResourceManager {
 		}
 
 		// make resource reference
-		for (Class<?> componentClass : targets) {
-
-			if (!(Component.class.isAssignableFrom(componentClass))) {
-				throw new RuntimeException(
-						"@" + BundleResource.class.getName() + " / " + BundleResources.class.getName()
-								+ " annotated class should subclass Component: " + componentClass);
-			}
-
-			for (BundleResources globalResources : componentClass.getAnnotationsByType(BundleResources.class)) {
-				for (BundleResource globalResource : globalResources.value()) {
-					newResouceReference(componentClass, globalResource, cssResoucereferences, jsResoucereferences);
-				}
-			}
-
-			for (BundleResource globalResource : componentClass.getAnnotationsByType(BundleResource.class)) {
-				newResouceReference(componentClass, globalResource, cssResoucereferences, jsResoucereferences);
-			}
-
-		}
-
+		createResourceReference(targets);
 		if (cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
 			return;
 		}
@@ -219,9 +223,8 @@ public class BundleResourceManager {
 		ResourceBundles bundles = app.getResourceBundles();
 		registerBundles(bundles, cssResoucereferences, jsResoucereferences);
 
-		// render bundle resource config
-
 		if (rendererConfig != ResourceBundleRendererConfig.MANUAL_RENDERING) {
+			// add resource renderer
 			app.getComponentInstantiationListeners()
 					.add(newBundleResourceAutoAppender(getCssKeyResource(), getJsKeyResource()));
 		}
@@ -271,9 +274,90 @@ public class BundleResourceManager {
 		List<Class<?>> targets = new ArrayList<>();
 		targets.addAll(bundleTargets);
 		targets.addAll(bundlesTargets);
-		targets.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
+
+		sortComponents(targets);
 
 		return targets;
+	}
+
+	/**
+	 * Sort classes according to resource dependencies.
+	 * 
+	 * @param targets
+	 * @return
+	 */
+	private List<Class<?>> sortComponents(List<Class<?>> targets) {
+
+		Map<Class<?>, ResourceDependency> dependencyMap = new HashMap<>();
+
+		// make dependency list
+		for (Class<?> componentClass : targets) {
+
+			if (!(Component.class.isAssignableFrom(componentClass))) {
+				throw new RuntimeException(
+						"@" + BundleResource.class.getName() + " / " + BundleResources.class.getName()
+								+ " annotated class should subclass Component: " + componentClass);
+			}
+
+			ResourceDependency resDependency = dependencyMap.computeIfAbsent(componentClass,
+					k -> new ResourceDependency(k));
+			dependencyMap.put(componentClass, resDependency);
+
+			for (BundleResources globalResources : componentClass.getAnnotationsByType(BundleResources.class)) {
+				for (BundleResource globalResource : globalResources.value()) {
+
+					for (Class<?> depClass : globalResource.dependencies()) {
+						ResourceDependency subResDependency = dependencyMap.computeIfAbsent(depClass,
+								k -> new ResourceDependency(k));
+
+						resDependency.dependencies.add(subResDependency);
+						dependencyMap.put(depClass, subResDependency);
+					}
+
+				}
+			}
+
+			for (BundleResource globalResource : componentClass.getAnnotationsByType(BundleResource.class)) {
+				for (Class<?> depClass : globalResource.dependencies()) {
+					ResourceDependency subResDependency = dependencyMap.computeIfAbsent(depClass,
+							k -> new ResourceDependency(k));
+
+					resDependency.dependencies.add(subResDependency);
+					dependencyMap.put(depClass, subResDependency);
+				}
+			}
+		}
+
+		// sort acording to resource dependencies
+
+		List<ResourceDependency> resourceDependencies = new ArrayList<>(dependencyMap.values());
+		resourceDependencies.sort((d1, d2) -> d1.clazz.getName().compareTo(d2.clazz.getName()));
+
+		DependencyComparator comparator = new DependencyComparator();
+		comparator.analyze(resourceDependencies);
+		targets.sort(comparator);
+
+		return targets;
+	}
+
+	/**
+	 * Creates resource reference.
+	 * 
+	 * @param targets
+	 */
+	private void createResourceReference(Collection<Class<?>> targets) {
+		for (Class<?> componentClass : targets) {
+
+			for (BundleResources globalResources : componentClass.getAnnotationsByType(BundleResources.class)) {
+				for (BundleResource globalResource : globalResources.value()) {
+					createResouceReference(componentClass, globalResource, cssResoucereferences, jsResoucereferences);
+				}
+			}
+
+			for (BundleResource globalResource : componentClass.getAnnotationsByType(BundleResource.class)) {
+				createResouceReference(componentClass, globalResource, cssResoucereferences, jsResoucereferences);
+			}
+		}
 	}
 
 	/**
@@ -284,7 +368,7 @@ public class BundleResourceManager {
 	 * @param jsResouceRefs
 	 */
 	@SuppressWarnings("unchecked")
-	private void newResouceReference(Class<?> componentClass, BundleResource globalResource,
+	private void createResouceReference(Class<?> componentClass, BundleResource globalResource,
 			List<CssResourceReference> cssResouceRefs, List<JavaScriptResourceReference> jsResouceRefs) {
 
 		String resourceName = globalResource.name();
@@ -329,6 +413,123 @@ public class BundleResourceManager {
 			logger.info("Make bundle " + bundleResourceName + ".js");
 			bundles.addJavaScriptBundle(app.getClass(), bundleResourceName + ".js",
 					jsResouceRefs.toArray(new JavaScriptResourceReference[0]));
+		}
+	}
+
+	/**
+	 * Comparator that compares resource dependencies.
+	 * 
+	 * @author Ryo Tsunoda
+	 *
+	 */
+	private class DependencyComparator implements Comparator<Class<?>> {
+
+		private final Stack<Class<?>> stack = new Stack<>();
+
+		/**
+		 * Prepare for sort.
+		 * 
+		 * @param classResources
+		 */
+		public void analyze(Collection<ResourceDependency> classResources) {
+			for (ResourceDependency curDependency : classResources) {
+				Set<Class<?>> visitedCurDep = new HashSet<>();
+				analyze(curDependency, visitedCurDep);
+			}
+		}
+
+		private void analyze(ResourceDependency dependency, Set<Class<?>> visited) {
+
+			boolean circulardependency = dependency.visited && visited.contains(dependency.clazz);
+			if (circulardependency) {
+				StringBuilder sb = new StringBuilder(dependency.clazz.getSimpleName() + "\n");
+				for (ResourceDependency child : dependency.dependencies) {
+					createTreeString(child, dependency, sb, "");
+				}
+				throw new RuntimeException("Circular dependency.\n" + sb.toString());
+			}
+
+			visited.add(dependency.clazz);
+			dependency.visited = true;
+			for (ResourceDependency child : dependency.dependencies) {
+				analyze(child, visited);
+			}
+
+			stack.push(dependency.clazz);
+		}
+
+		/**
+		 * Make tree string for exception.
+		 * 
+		 * @param dependency
+		 * @param error
+		 * @param sb
+		 * @param prefix
+		 */
+		private void createTreeString(ResourceDependency dependency, ResourceDependency error, StringBuilder sb,
+				String prefix) {
+
+			prefix += " ";
+			sb.append(prefix + dependency.clazz.getSimpleName() + "\n");
+
+			if (error == dependency) {
+				sb.append(prefix + "↑　Cause component class.\n");
+				return;
+			}
+
+			for (ResourceDependency child : dependency.dependencies) {
+				createTreeString(child, error, sb, prefix);
+			}
+		}
+
+		/**
+		 * Compare resource dependencies.
+		 */
+		@Override
+		public int compare(Class<?> o1, Class<?> o2) {
+			return Integer.compare(stack.indexOf(o1), stack.indexOf(o2));
+		}
+
+	}
+
+	private class ResourceDependency {
+
+		/**
+		 * Component class.
+		 */
+		public final Class<?> clazz;
+
+		/**
+		 * Dependencies.
+		 */
+		public final Set<ResourceDependency> dependencies = new HashSet<>();
+
+		/**
+		 * Check for circular dependency.
+		 */
+		public boolean visited = false;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param componentClass
+		 */
+		public ResourceDependency(Class<?> componentClass) {
+			this.clazz = componentClass;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null || !(obj instanceof ResourceDependency)) {
+				return false;
+			}
+
+			return clazz == ((ResourceDependency) obj).clazz;
+		}
+
+		@Override
+		public int hashCode() {
+			return clazz.hashCode();
 		}
 	}
 

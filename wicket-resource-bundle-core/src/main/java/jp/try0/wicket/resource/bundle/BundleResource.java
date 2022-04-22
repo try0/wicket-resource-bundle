@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 
 /**
@@ -27,10 +26,17 @@ public @interface BundleResource {
 	Class<? extends Component> scope() default Component.class;
 
 	/**
-	 * {@link CssResourceReference#getName()}
+	 * {@link ResourceReference#getName()}
 	 * 
 	 * @return
 	 */
 	String name();
+
+	/**
+	 * Resource ependency.
+	 * 
+	 * @return
+	 */
+	Class<? extends Component>[] dependencies() default {};
 
 }
