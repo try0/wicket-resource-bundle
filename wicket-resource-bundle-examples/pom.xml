@@ -15,7 +15,7 @@
 	<packaging>war</packaging>
 
 	<!-- TODO project name -->
-	<name>wicket-resource-bundle</name>
+	<name>wicket-resource-bundle-examples</name>
 	<!-- <organization> <name>company name</name> <url>company url</url> </organization> -->
 
 
@@ -93,6 +93,10 @@
 			</testResource>
 		</testResources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+			</plugin>
 			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
