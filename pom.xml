@@ -13,8 +13,10 @@
 	</modules>
 
 	<properties>
-
 		<wicket-resource-bundle.version>0.0.1-SNAPSHOT</wicket-resource-bundle.version>
+
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<wicket.version>8.0.0</wicket.version>
 		<wicket-stuff.version>8.0.0</wicket-stuff.version>
@@ -22,36 +24,52 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<junit.version>5.8.2</junit.version>
 		<junit-platform-launcher.version>1.8.2</junit-platform-launcher.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+		<guava.version>31.0.1-jre</guava.version>
+		<log4j.version>2.17.2</log4j.version>
 
-		<java.version>1.8</java.version>
-		<maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
 	</properties>
 
 
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- WICKET DEPENDENCIES -->
+			<dependency>
+				<groupId>org.apache.wicket</groupId>
+				<artifactId>wicket-core</artifactId>
+				<version>${wicket.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.wicketstuff</groupId>
+				<artifactId>wicketstuff-annotation</artifactId>
+				<version>${wicket-stuff.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
-
-
-		<!-- WICKET DEPENDENCIES -->
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-core</artifactId>
-			<version>${wicket.version}</version>
+			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.wicketstuff</groupId>
 			<artifactId>wicketstuff-annotation</artifactId>
-			<version>${wicket-stuff.version}</version>
+			<scope>test</scope>
 		</dependency>
-
-
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
+			<version>${javax.servlet-api.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -87,38 +105,15 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.0.1-jre</version>
+			<version>${guava.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.17.2</version>
+			<version>${log4j.version}</version>
 			<scope>test</scope>
 		</dependency>
-
-
 	</dependencies>
-
-
-
-	<build>
-		<plugins>
-			<plugin>
-				<inherited>true</inherited>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<encoding>UTF-8</encoding>
-					<showWarnings>true</showWarnings>
-					<showDeprecation>true</showDeprecation>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>
