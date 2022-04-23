@@ -1,7 +1,7 @@
 # wicket-resource-bundle
 
 Extends resource bundling of wicket.   
-Bundles the resources placed in the package of the annotated component into one.  
+Looks up resources located in annotated component packages and bundles them into a single resource.  
 wicket-resource-bundle depends on [wicket-core](https://github.com/apache/wicket/tree/master/wicket-core) and [wicketstuff-annotation](https://github.com/wicketstuff/core/tree/master/annotation).  
 
 WicketApplication.css ( = HomePage.css + MyPanel.css )  
@@ -71,7 +71,7 @@ public class MyPanel extends Panel {
 }
 ```
 
-Define resource dependencies
+## Define dependencies.
 
 
 ```java
