@@ -29,6 +29,8 @@ public class WicketApplication extends WebApplication {
 		super.init();
 
 		// add your configuration here
+		
+		getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV3());
 
 		// lookup anotated components and register resources to ResourceBundles
 		BundleResourceManager manager = new BundleResourceManager(this);

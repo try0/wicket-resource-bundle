@@ -129,6 +129,7 @@ public class BundleResourceManagerTest extends AbstractResourceBundleTest {
 		classResources.add(rd4);
 		rd3.dependencies.add(rd4);
 
+		// circular dependency
 		rd4.dependencies.add(rd1);
 
 		try {

@@ -116,4 +116,42 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<inherited>true</inherited>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven-surefire-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Ryo Tsunoda</name>
+			<email>try0.development@gmail.com</email>
+		</developer>
+	</developers>
+	<scm>
+		<url>https://github.com/try0/wicket-resource-bundle</url>
+		<connection>scm:git:git@github.com:try0/wicket-resource-bundle.git</connection>
+		<developerConnection>scm:git:git@github.com:try0/wicket-resource-bundle.git</developerConnection>
+	</scm>
+
+
 </project>
