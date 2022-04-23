@@ -5,15 +5,20 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>jp.try0.wicket</groupId>
 	<artifactId>wicket-resource-bundle-parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>pom</packaging>
+
+	<name>wicket-resource-bundle-parent</name>
+	<url>https://github.com/try0/wicket-resource-bundle</url>
+	<description>wicket-resource-bundle-parent</description>
+
 	<modules>
 		<module>wicket-resource-bundle-core</module>
 		<module>wicket-resource-bundle-examples</module>
 	</modules>
 
 	<properties>
-		<wicket-resource-bundle.version>0.0.1-SNAPSHOT</wicket-resource-bundle.version>
+		<wicket-resource-bundle.version>0.0.1</wicket-resource-bundle.version>
 
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -189,14 +194,36 @@
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-				<version>${maven-javadoc-plugin.version}</version> <configuration> <show>protected</show> 
-				<failOnError>false</failOnError> </configuration> <executions> <execution> 
-				<phase>package</phase> <goals> <goal>jar</goal> </goals> </execution> </executions> 
-				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-source-plugin</artifactId> 
-				<version>${maven-source-plugin.version}</version> <executions> <execution> 
-				<phase>package</phase> <goals> <goal>jar</goal> </goals> </execution> </executions> 
-				</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<configuration>
+					<show>protected</show>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -275,11 +302,11 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 

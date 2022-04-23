@@ -5,10 +5,12 @@
 	<parent>
 		<groupId>jp.try0.wicket</groupId>
 		<artifactId>wicket-resource-bundle-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>wicket-resource-bundle-core</artifactId>
-
+	<name>wicket-resource-bundle-core</name>
+	<description>wicket-resource-bundle-core</description>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
