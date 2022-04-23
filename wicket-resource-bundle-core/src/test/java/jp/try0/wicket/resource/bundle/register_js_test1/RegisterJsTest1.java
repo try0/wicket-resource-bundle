@@ -43,6 +43,11 @@ public class RegisterJsTest1 extends AbstractResourceBundleTest {
 		Assertions.assertTrue(manager.getResourceHolderClasses().contains(TestComponent_registerResources1.class));
 		Assertions.assertTrue(manager.getResourceHolderClasses().contains(TestComponent_registerResources2.class));
 
+		Assertions.assertFalse(manager.isCssHolderClass(TestComponent_registerResources1.class));
+		Assertions.assertFalse(manager.isCssHolderClass(TestComponent_registerResources2.class));
+		Assertions.assertTrue(manager.isJsHolderClass(TestComponent_registerResources1.class));
+		Assertions.assertTrue(manager.isJsHolderClass(TestComponent_registerResources2.class));
+
 		// test created bundles
 		BundleResourceMock bundles = (BundleResourceMock) application.getResourceBundles();
 		Assertions.assertEquals(2, bundles.getProvidedResourcesToBundles().size());
@@ -55,10 +60,7 @@ public class RegisterJsTest1 extends AbstractResourceBundleTest {
 			JavaScriptReferenceHeaderItem item = (JavaScriptReferenceHeaderItem) key;
 			ResourceReference resRef = item.getReference();
 
-			String className = "TestComponent_registerResources" + (items.indexOf(key) + 1);
-
-			Assertions.assertEquals(className, resRef.getScope().getSimpleName());
-			Assertions.assertEquals(className + ".js", resRef.getName());
+			Assertions.assertEquals(resRef.getScope().getSimpleName() + ".js", resRef.getName());
 		}
 
 	}

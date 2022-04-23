@@ -30,7 +30,7 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 		this.cssBundleRenderKeyHeaderItem = cssBundleRenderKeyHeaderItem;
 		this.jsBundleRenderKeyHeaderItem = jsBundleRenderKeyHeaderItem;
 
-		this.bundleResourceManager = getBundleResourceManager();
+		this.bundleResourceManager = BundleResourceManager.get();
 	}
 
 	@Override
@@ -40,28 +40,33 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 
 		case ALL_PAGE:
 			if (component instanceof Page) {
-				component.add(new BundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem));
+				component.add(newBundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem));
 			}
 			break;
+
 		case ONLY_BUNDLE_RESOURCE_HOLDER:
 
-			if (bundleResourceManager.isResourceHolderClass(component.getClass())) {
+			CssHeaderItem cssItem = null;
+			JavaScriptHeaderItem jsItem = null;
 
-				BundleResourceRenderer renderer = new BundleResourceRenderer(cssBundleRenderKeyHeaderItem,
-						jsBundleRenderKeyHeaderItem);
+			if (bundleResourceManager.isCssHolderClass(component.getClass())) {
+				cssItem = cssBundleRenderKeyHeaderItem;
+			}
+			if (bundleResourceManager.isJsHolderClass(component.getClass())) {
+				jsItem = jsBundleRenderKeyHeaderItem;
+			}
 
-				Page page = component.findParent(Page.class);
-				if (page != null) {
-					page.add(renderer);
-				} else {
-					component.add(renderer);
-				}
+			if (cssItem != null || jsItem != null) {
+				BundleResourceRenderer renderer = newBundleResourceRenderer(cssItem, jsItem);
+				component.add(renderer);
 			}
 			break;
+
 		case MANUAL_RENDERING:
 			// noop
 			// Users implement their own header item rendering process
 			break;
+
 		default:
 			break;
 
@@ -69,7 +74,8 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 
 	}
 
-	private BundleResourceManager getBundleResourceManager() {
-		return bundleResourceManager;
+	protected BundleResourceRenderer newBundleResourceRenderer(CssHeaderItem cssBundleRenderKeyHeaderItem,
+			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
+		return new BundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem);
 	}
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -59,7 +60,9 @@ public class BundleResourceManager {
 
 	private ResourceBundleRendererConfig rendererConfig = ResourceBundleRendererConfig.MANUAL_RENDERING;
 
-	private final Set<Class<? extends Component>> resourceHolderClasses = new HashSet<>();
+	private final Set<Class<? extends Component>> cssHolderClasses = new HashSet<>();
+
+	private final Set<Class<? extends Component>> jsHolderClasses = new HashSet<>();
 
 	private final List<CssResourceReference> cssResoucereferences = new ArrayList<>();
 
@@ -162,7 +165,10 @@ public class BundleResourceManager {
 	 * @return
 	 */
 	public Set<Class<? extends Component>> getResourceHolderClasses() {
-		return resourceHolderClasses;
+		Set<Class<? extends Component>> resourceHolders = new HashSet<>();
+		resourceHolders.addAll(cssHolderClasses);
+		resourceHolders.addAll(jsHolderClasses);
+		return resourceHolders;
 	}
 
 	/**
@@ -172,7 +178,15 @@ public class BundleResourceManager {
 	 * @return
 	 */
 	public boolean isResourceHolderClass(Class<?> clazz) {
-		return getResourceHolderClasses().contains(clazz);
+		return isCssHolderClass(clazz) || isJsHolderClass(clazz);
+	}
+
+	public boolean isCssHolderClass(Class<?> clazz) {
+		return cssHolderClasses.contains(clazz);
+	}
+
+	public boolean isJsHolderClass(Class<?> clazz) {
+		return jsHolderClasses.contains(clazz);
 	}
 
 	/**
@@ -188,7 +202,6 @@ public class BundleResourceManager {
 	 * Look up {@link BundleResource}, {@link BundleResources} and register them in
 	 * the {@link ResourceBundles}.
 	 */
-	@SuppressWarnings("unchecked")
 	public void register() {
 
 		logger.info("Register resouces to bundle.");
@@ -208,18 +221,14 @@ public class BundleResourceManager {
 		}
 
 		// lookup components
-		List<Class<?>> targets = lookupComponents();
-		if (targets.isEmpty() && cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
+		List<Class<? extends Component>> targetComponents = lookupComponents();
+		if (targetComponents.isEmpty() && cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
 			logger.warn("No resources.");
 			return;
 		}
 
-		for (Class<?> target : targets) {
-			resourceHolderClasses.add((Class<? extends Component>) target);
-		}
-
 		// make resource reference
-		createResourceReference(targets);
+		createResourceReference(targetComponents);
 		if (cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
 			return;
 		}
@@ -263,7 +272,8 @@ public class BundleResourceManager {
 	 * 
 	 * @return
 	 */
-	private List<Class<?>> lookupComponents() {
+	@SuppressWarnings("unchecked")
+	private List<Class<? extends Component>> lookupComponents() {
 
 		AnnotatedMountScanner scanner = new AnnotatedMountScanner();
 		String pattern = scanner.getPatternForPackage(scanPackageName);
@@ -280,9 +290,18 @@ public class BundleResourceManager {
 		targets.addAll(bundleTargets);
 		targets.addAll(bundlesTargets);
 
-		sortComponents(targets);
+		List<Class<? extends Component>> targetComponents = targets.stream().map(c -> {
+			if (!(Component.class.isAssignableFrom(c))) {
+				throw new RuntimeException("@" + BundleResource.class.getName() + " / "
+						+ BundleResources.class.getName() + " annotated class should subclass Component: " + c);
+			}
 
-		return targets;
+			return (Class<? extends Component>) c;
+		}).collect(Collectors.toList());
+
+		sortComponents(targetComponents);
+
+		return targetComponents;
 	}
 
 	/**
@@ -291,18 +310,12 @@ public class BundleResourceManager {
 	 * @param targets
 	 * @return
 	 */
-	private List<Class<?>> sortComponents(List<Class<?>> targets) {
+	private List<Class<? extends Component>> sortComponents(List<Class<? extends Component>> targets) {
 
 		Map<Class<?>, ResourceDependency> dependencyMap = new HashMap<>();
 
 		// make dependency list
 		for (Class<?> componentClass : targets) {
-
-			if (!(Component.class.isAssignableFrom(componentClass))) {
-				throw new RuntimeException(
-						"@" + BundleResource.class.getName() + " / " + BundleResources.class.getName()
-								+ " annotated class should subclass Component: " + componentClass);
-			}
 
 			ResourceDependency resDependency = dependencyMap.computeIfAbsent(componentClass,
 					k -> new ResourceDependency(k));
@@ -350,8 +363,8 @@ public class BundleResourceManager {
 	 * 
 	 * @param targets
 	 */
-	private void createResourceReference(Collection<Class<?>> targets) {
-		for (Class<?> componentClass : targets) {
+	private void createResourceReference(Collection<Class<? extends Component>> targetComponents) {
+		for (Class<? extends Component> componentClass : targetComponents) {
 
 			for (BundleResources globalResources : componentClass.getAnnotationsByType(BundleResources.class)) {
 				for (BundleResource globalResource : globalResources.value()) {
@@ -372,25 +385,26 @@ public class BundleResourceManager {
 	 * @param cssResouceRefs
 	 * @param jsResouceRefs
 	 */
-	@SuppressWarnings("unchecked")
-	private void createResouceReference(Class<?> componentClass, BundleResource globalResource,
+	private void createResouceReference(Class<? extends Component> componentClass, BundleResource globalResource,
 			List<CssResourceReference> cssResouceRefs, List<JavaScriptResourceReference> jsResouceRefs) {
 
 		String resourceName = globalResource.name();
 		Class<? extends Component> scope = globalResource.scope();
 
 		if (scope == Component.class) {
-			scope = (Class<? extends Component>) componentClass;
+			scope = componentClass;
 		}
 
 		logger.info(scope.getName() + "/" + resourceName);
 
 		if (resourceName.toLowerCase().endsWith(".css")) {
+			cssHolderClasses.add(componentClass);
 			cssResouceRefs.add(new CssResourceReference(scope, resourceName));
 			return;
 		}
 
 		if (resourceName.toLowerCase().endsWith(".js")) {
+			jsHolderClasses.add(componentClass);
 			jsResouceRefs.add(new JavaScriptResourceReference(scope, resourceName));
 			return;
 		}

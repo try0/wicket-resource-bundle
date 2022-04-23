@@ -69,15 +69,45 @@ public class BundleResourceManagerTest extends AbstractResourceBundleTest {
 		DependencyComparator comparator = new DependencyComparator();
 		comparator.analyze(classResources);
 
-		List<Class<?>> classes = Arrays.asList(TestComponent1.class, TestComponent2.class, TestComponent3.class,
-				TestComponent4.class);
+		{
+			List<Class<?>> classes = Arrays.asList(TestComponent1.class, TestComponent2.class, TestComponent3.class,
+					TestComponent4.class);
 
-		classes.sort(comparator);
+			classes.sort(comparator);
 
-		Assertions.assertEquals(0, classes.indexOf(TestComponent4.class));
-		Assertions.assertEquals(1, classes.indexOf(TestComponent3.class));
-		Assertions.assertEquals(2, classes.indexOf(TestComponent2.class));
-		Assertions.assertEquals(3, classes.indexOf(TestComponent1.class));
+			Assertions.assertEquals(0, classes.indexOf(TestComponent4.class));
+			Assertions.assertEquals(1, classes.indexOf(TestComponent3.class));
+			Assertions.assertEquals(2, classes.indexOf(TestComponent2.class));
+			Assertions.assertEquals(3, classes.indexOf(TestComponent1.class));
+			
+			classes.sort(comparator);
+			
+			Assertions.assertEquals(0, classes.indexOf(TestComponent4.class));
+			Assertions.assertEquals(1, classes.indexOf(TestComponent3.class));
+			Assertions.assertEquals(2, classes.indexOf(TestComponent2.class));
+			Assertions.assertEquals(3, classes.indexOf(TestComponent1.class));
+		}
+
+		{
+			List<Class<?>> classes = Arrays.asList(TestComponent2.class, TestComponent1.class, TestComponent4.class,
+					TestComponent3.class);
+
+			classes.sort(comparator);
+
+			Assertions.assertEquals(0, classes.indexOf(TestComponent4.class));
+			Assertions.assertEquals(1, classes.indexOf(TestComponent3.class));
+			Assertions.assertEquals(2, classes.indexOf(TestComponent2.class));
+			Assertions.assertEquals(3, classes.indexOf(TestComponent1.class));
+		}
+
+		{
+			List<Class<?>> classes = Arrays.asList(TestComponent4.class, TestComponent1.class);
+
+			classes.sort(comparator);
+
+			Assertions.assertEquals(0, classes.indexOf(TestComponent4.class));
+			Assertions.assertEquals(1, classes.indexOf(TestComponent1.class));
+		}
 	}
 
 	@Test
@@ -107,10 +137,10 @@ public class BundleResourceManagerTest extends AbstractResourceBundleTest {
 
 			Assertions.fail();
 		} catch (Exception e) {
-			logger.error("", e);
 			String nl = System.getProperty("line.separator");
 
 			StringBuilder error = new StringBuilder();
+			error.append("Circular dependency." + nl);
 			error.append("TestComponent1" + nl);
 			error.append(" TestComponent2" + nl);
 			error.append("  TestComponent3" + nl);
@@ -122,5 +152,5 @@ public class BundleResourceManagerTest extends AbstractResourceBundleTest {
 			Assertions.assertTrue(e instanceof RuntimeException);
 		}
 	}
-
+	
 }

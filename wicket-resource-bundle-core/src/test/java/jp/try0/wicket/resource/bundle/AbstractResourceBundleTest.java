@@ -1,10 +1,14 @@
 package jp.try0.wicket.resource.bundle;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.ResourceBundles;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.resource.ResourceReferenceRegistry;
@@ -16,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractResourceBundleTest {
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	protected WebApplication application;
 	protected WicketTester tester;
 
@@ -59,5 +63,13 @@ public abstract class AbstractResourceBundleTest {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	public static <T extends Behavior> List<T> findBehaviors(MarkupContainer component, Class<T> behaviorCls) {
+		List<T> behaviors = new ArrayList<>();
+		behaviors.addAll(component.getBehaviors(behaviorCls));
+		component.visitChildren((c, v) -> behaviors.addAll(c.getBehaviors(behaviorCls)));
+
+		return behaviors;
 	}
 }
