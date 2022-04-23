@@ -18,7 +18,7 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 
 	private final JavaScriptHeaderItem jsBundleRenderKeyHeaderItem;
 
-	private transient BundleResourceManager bundleResourceManager;
+	private final BundleResourceManager bundleResourceManager;
 
 	/**
 	 * Constructor
@@ -29,14 +29,14 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
 		this.cssBundleRenderKeyHeaderItem = cssBundleRenderKeyHeaderItem;
 		this.jsBundleRenderKeyHeaderItem = jsBundleRenderKeyHeaderItem;
+
+		this.bundleResourceManager = getBundleResourceManager();
 	}
 
 	@Override
 	public void onInstantiation(Component component) {
 
-		BundleResourceManager brManager = getBundleResourceManager();
-
-		switch (brManager.getRendererConfig()) {
+		switch (bundleResourceManager.getRendererConfig()) {
 
 		case ALL_PAGE:
 			if (component instanceof Page) {
@@ -45,12 +45,12 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 			break;
 		case ONLY_BUNDLE_RESOURCE_HOLDER:
 
-			if (brManager.isResourceHolderClass(component.getClass())) {
+			if (bundleResourceManager.isResourceHolderClass(component.getClass())) {
 
 				BundleResourceRenderer renderer = new BundleResourceRenderer(cssBundleRenderKeyHeaderItem,
 						jsBundleRenderKeyHeaderItem);
-				
-				Page page = component.getPage();
+
+				Page page = component.findParent(Page.class);
 				if (page != null) {
 					page.add(renderer);
 				} else {
@@ -60,6 +60,7 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 			break;
 		case MANUAL_RENDERING:
 			// noop
+			// Users implement their own header item rendering process
 			break;
 		default:
 			break;
@@ -69,10 +70,6 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 	}
 
 	private BundleResourceManager getBundleResourceManager() {
-		if (bundleResourceManager == null) {
-			bundleResourceManager = BundleResourceManager.get();
-		}
-
 		return bundleResourceManager;
 	}
 }
