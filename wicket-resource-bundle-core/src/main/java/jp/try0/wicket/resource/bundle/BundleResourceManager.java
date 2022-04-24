@@ -205,8 +205,6 @@ public class BundleResourceManager {
 	 */
 	public void register() {
 
-		logger.info("Register resouces to bundle.");
-
 		app.setMetaData(APP_META_DATA_KEY, this);
 
 		Class<?> appClass = app.getClass();
@@ -231,6 +229,7 @@ public class BundleResourceManager {
 		// make resource reference
 		createResourceReference(targetComponents);
 		if (cssResoucereferences.isEmpty() && jsResoucereferences.isEmpty()) {
+			logger.warn("No resources.");
 			return;
 		}
 
