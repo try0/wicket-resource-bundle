@@ -57,6 +57,8 @@ public class BundleResourceManager {
 
 	private String scanPackageName;
 
+	private Class<?> bundleResourceScope;
+
 	private String bundleResourceName;
 
 	private ResourceBundleRendererConfig rendererConfig = ResourceBundleRendererConfig.MANUAL_RENDERING;
@@ -76,6 +78,28 @@ public class BundleResourceManager {
 	 */
 	public BundleResourceManager(Application app) {
 		this.app = app;
+	}
+
+	/**
+	 * Sets the scope of resource bundle.
+	 * 
+	 * @param bundleResourceScope
+	 * @return
+	 */
+	public BundleResourceManager setBundleResourceScope(Class<?> bundleResourceScope) {
+		this.bundleResourceScope = bundleResourceScope;
+		return this;
+	}
+
+	/**
+	 * Sets the name of resource bundle.
+	 * 
+	 * @param bundleResourceName
+	 * @return
+	 */
+	public BundleResourceManager setBundleResourceName(String bundleResourceName) {
+		this.bundleResourceName = bundleResourceName;
+		return this;
 	}
 
 	/**
@@ -217,6 +241,11 @@ public class BundleResourceManager {
 		if (bundleResourceName == null || bundleResourceName.isEmpty()) {
 			// use app name
 			bundleResourceName = appClass.getSimpleName();
+		}
+
+		if (bundleResourceScope == null) {
+			// use app class
+			bundleResourceScope = appClass;
 		}
 
 		// lookup components
@@ -421,18 +450,18 @@ public class BundleResourceManager {
 			List<JavaScriptResourceReference> jsResouceRefs) {
 
 		if (!cssResouceRefs.isEmpty()) {
-			logger.info("Register bundle " + app.getClass().getName() + " - " + bundleResourceName + ".css");
+			logger.info("Register bundle " + bundleResourceScope.getName() + " - " + bundleResourceName + ".css");
 			cssResouceRefs.forEach(ref -> logger.info(ref.getScope().getName() + " - " + ref.getName()));
 
-			bundles.addCssBundle(app.getClass(), bundleResourceName + ".css",
+			bundles.addCssBundle(bundleResourceScope, bundleResourceName + ".css",
 					cssResouceRefs.toArray(new CssResourceReference[0]));
 		}
 
 		if (!jsResouceRefs.isEmpty()) {
-			logger.info("Register bundle " + app.getClass().getName() + " - " + bundleResourceName + ".js");
+			logger.info("Register bundle " + bundleResourceScope.getName() + " - " + bundleResourceName + ".js");
 			jsResouceRefs.forEach(ref -> logger.info(ref.getScope().getName() + " - " + ref.getName()));
 
-			bundles.addJavaScriptBundle(app.getClass(), bundleResourceName + ".js",
+			bundles.addJavaScriptBundle(bundleResourceScope, bundleResourceName + ".js",
 					jsResouceRefs.toArray(new JavaScriptResourceReference[0]));
 		}
 	}
