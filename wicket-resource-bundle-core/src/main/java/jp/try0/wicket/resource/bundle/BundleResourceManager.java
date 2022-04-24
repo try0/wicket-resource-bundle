@@ -257,7 +257,7 @@ public class BundleResourceManager {
 
 		CssHeaderItem cssRenderKeyItem = null;
 		if (cssKeyResource != null) {
-			cssRenderKeyItem = CssHeaderItem.forReference(jsKeyResource);
+			cssRenderKeyItem = CssHeaderItem.forReference(cssKeyResource);
 		}
 		JavaScriptHeaderItem jsRenderKeyItem = null;
 		if (jsKeyResource != null) {
