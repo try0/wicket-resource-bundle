@@ -396,8 +396,6 @@ public class BundleResourceManager {
 			scope = componentClass;
 		}
 
-		logger.info(scope.getName() + "/" + resourceName);
-
 		if (resourceName.toLowerCase().endsWith(".css")) {
 			cssHolderClasses.add(componentClass);
 			cssResouceRefs.add(new CssResourceReference(scope, resourceName));
@@ -424,13 +422,17 @@ public class BundleResourceManager {
 			List<JavaScriptResourceReference> jsResouceRefs) {
 
 		if (!cssResouceRefs.isEmpty()) {
-			logger.info("Make bundle " + bundleResourceName + ".css");
+			logger.info("Register bundle " + app.getClass().getName() + " - " + bundleResourceName + ".css");
+			cssResouceRefs.forEach(ref -> logger.info(ref.getScope().getName() + " - " + ref.getName()));
+
 			bundles.addCssBundle(app.getClass(), bundleResourceName + ".css",
 					cssResouceRefs.toArray(new CssResourceReference[0]));
 		}
 
 		if (!jsResouceRefs.isEmpty()) {
-			logger.info("Make bundle " + bundleResourceName + ".js");
+			logger.info("Register bundle " + app.getClass().getName() + " - " + bundleResourceName + ".js");
+			jsResouceRefs.forEach(ref -> logger.info(ref.getScope().getName() + " - " + ref.getName()));
+
 			bundles.addJavaScriptBundle(app.getClass(), bundleResourceName + ".js",
 					jsResouceRefs.toArray(new JavaScriptResourceReference[0]));
 		}
