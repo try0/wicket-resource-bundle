@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>jp.try0.wicket</groupId>
 	<artifactId>wicket-resource-bundle-parent</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 
 	<name>wicket-resource-bundle-parent</name>
@@ -18,7 +18,7 @@
 	</modules>
 
 	<properties>
-		<wicket-resource-bundle.version>0.0.1</wicket-resource-bundle.version>
+		<wicket-resource-bundle.version>0.0.2</wicket-resource-bundle.version>
 
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
