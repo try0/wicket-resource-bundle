@@ -9,7 +9,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.request.resource.ResourceReference;
 
 /**
- * Marker.
+ * Marker of components that has resource for register bundle.
  * 
  * @author Ryo Tsunoda
  *
@@ -21,21 +21,21 @@ public @interface BundleResource {
 	/**
 	 * {@link ResourceReference#getScope()}
 	 * 
-	 * @return
+	 * @return resource scope
 	 */
 	Class<? extends Component> scope() default Component.class;
 
 	/**
 	 * {@link ResourceReference#getName()}
 	 * 
-	 * @return
+	 * @return resource name
 	 */
 	String name();
 
 	/**
-	 * Resource ependency.
+	 * Resource dependency.
 	 * 
-	 * @return
+	 * @return resource dependencies
 	 */
 	Class<? extends Component>[] dependencies() default {};
 

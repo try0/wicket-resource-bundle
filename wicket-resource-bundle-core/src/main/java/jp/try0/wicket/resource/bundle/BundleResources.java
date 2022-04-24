@@ -15,6 +15,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BundleResources {
 
+	/**
+	 * Resources for register bundel.
+	 * 
+	 * @return Resources for register bundel
+	 */
 	BundleResource[] value();
 
 }

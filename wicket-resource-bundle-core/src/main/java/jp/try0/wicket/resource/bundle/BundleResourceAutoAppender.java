@@ -74,6 +74,13 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 
 	}
 
+	/**
+	 * Creates renderer.
+	 * 
+	 * @param cssBundleRenderKeyHeaderItem the render key
+	 * @param jsBundleRenderKeyHeaderItem the render key
+	 * @return key resource renderer for resolve bundle resource
+	 */
 	protected BundleResourceRenderer newBundleResourceRenderer(CssHeaderItem cssBundleRenderKeyHeaderItem,
 			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
 		return new BundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem);

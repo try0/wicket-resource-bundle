@@ -7,6 +7,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
+ * Key resource renderer for resolve bundle resource.
  * 
  * @author Ryo Tsunoda
  *

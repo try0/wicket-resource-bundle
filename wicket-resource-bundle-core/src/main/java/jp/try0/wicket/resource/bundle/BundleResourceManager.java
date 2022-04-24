@@ -42,7 +42,7 @@ public class BundleResourceManager {
 	 * Gets manager. <br>
 	 * Need to execute {@link #register()} beforehand.
 	 * 
-	 * @return
+	 * @return bundle resource manager
 	 */
 	public static BundleResourceManager get() {
 		if (Application.exists()) {
@@ -74,7 +74,7 @@ public class BundleResourceManager {
 	/**
 	 * Constructor.
 	 * 
-	 * @param app
+	 * @param app the Application
 	 */
 	public BundleResourceManager(Application app) {
 		this.app = app;
@@ -83,8 +83,8 @@ public class BundleResourceManager {
 	/**
 	 * Sets the scope of resource bundle.
 	 * 
-	 * @param bundleResourceScope
-	 * @return
+	 * @param bundleResourceScope the scope of resource bundle
+	 * @return manager
 	 */
 	public BundleResourceManager setBundleResourceScope(Class<?> bundleResourceScope) {
 		this.bundleResourceScope = bundleResourceScope;
@@ -94,8 +94,8 @@ public class BundleResourceManager {
 	/**
 	 * Sets the name of resource bundle.
 	 * 
-	 * @param bundleResourceName
-	 * @return
+	 * @param bundleResourceName the name of resource bundle
+	 * @return manager
 	 */
 	public BundleResourceManager setBundleResourceName(String bundleResourceName) {
 		this.bundleResourceName = bundleResourceName;
@@ -103,12 +103,12 @@ public class BundleResourceManager {
 	}
 
 	/**
-	 * Sets the name that scan package.<br>
+	 * Sets the name of scan package.<br>
 	 * for use {@link AnnotatedMountScanner#getPatternForPackage(String)}.
 	 * 
 	 * @see AnnotatedMountScanner
-	 * @param scanPackageName
-	 * @return
+	 * @param scanPackageName the name of scan package
+	 * @return manager
 	 */
 	public BundleResourceManager setScanPackageName(String scanPackageName) {
 		this.scanPackageName = scanPackageName;
@@ -118,7 +118,7 @@ public class BundleResourceManager {
 	/**
 	 * Gets Application.
 	 * 
-	 * @return
+	 * @return application
 	 */
 	public Application getApplication() {
 		return app;
@@ -127,7 +127,7 @@ public class BundleResourceManager {
 	/**
 	 * Gets resource reference to render bundle resource.
 	 * 
-	 * @return
+	 * @return render key resource
 	 */
 	public CssResourceReference getCssKeyResource() {
 		if (!cssResoucereferences.isEmpty()) {
@@ -140,7 +140,7 @@ public class BundleResourceManager {
 	/**
 	 * Gets resource reference to render bundle resource.
 	 * 
-	 * @return
+	 * @return render key resource
 	 */
 	public JavaScriptResourceReference getJsKeyResource() {
 		if (!jsResoucereferences.isEmpty()) {
@@ -153,8 +153,8 @@ public class BundleResourceManager {
 	/**
 	 * Adds resource reference that register to bundles.
 	 * 
-	 * @param ref
-	 * @return
+	 * @param ref css reference
+	 * @return manager
 	 */
 	public BundleResourceManager addCssResourceReference(CssResourceReference ref) {
 		cssResoucereferences.add(ref);
@@ -164,8 +164,8 @@ public class BundleResourceManager {
 	/**
 	 * Adds resource reference that register to bundles.
 	 * 
-	 * @param ref
-	 * @return
+	 * @param ref js reference
+	 * @return manager
 	 */
 	public BundleResourceManager addJavaScriptResourceReference(JavaScriptResourceReference ref) {
 		jsResoucereferences.add(ref);
@@ -176,8 +176,8 @@ public class BundleResourceManager {
 	 * Sets the whether or not to add behavior that render bundle resources to all
 	 * pages.
 	 * 
-	 * @param appendAutoResourceRenderer
-	 * @return
+	 * @param rendererConfig render config
+	 * @return manager
 	 */
 	public BundleResourceManager setResourceBundleRendererConfig(ResourceBundleRendererConfig rendererConfig) {
 		this.rendererConfig = rendererConfig;
@@ -187,7 +187,7 @@ public class BundleResourceManager {
 	/**
 	 * Gets the classes of resource holder.
 	 * 
-	 * @return
+	 * @return the classes of resource holder
 	 */
 	public Set<Class<? extends Component>> getResourceHolderClasses() {
 		Set<Class<? extends Component>> resourceHolders = new HashSet<>();
@@ -199,17 +199,29 @@ public class BundleResourceManager {
 	/**
 	 * Whether the class has bundled resources.
 	 * 
-	 * @param clazz
-	 * @return
+	 * @param clazz check for exists resource
+	 * @return if exists resource is true otherwise false
 	 */
 	public boolean isResourceHolderClass(Class<?> clazz) {
 		return isCssHolderClass(clazz) || isJsHolderClass(clazz);
 	}
 
+	/**
+	 * Whether the class has css resources.
+	 * 
+	 * @param clazz check for exists css
+	 * @return if exists css is true otherwise false
+	 */
 	public boolean isCssHolderClass(Class<?> clazz) {
 		return cssHolderClasses.contains(clazz);
 	}
 
+	/**
+	 * Whether the class has js resources.
+	 * 
+	 * @param clazz check for exists js
+	 * @return if exists js is true otherwise false
+	 */
 	public boolean isJsHolderClass(Class<?> clazz) {
 		return jsHolderClasses.contains(clazz);
 	}
@@ -217,7 +229,7 @@ public class BundleResourceManager {
 	/**
 	 * Gets the render config.
 	 * 
-	 * @return
+	 * @return the render config
 	 */
 	public ResourceBundleRendererConfig getRendererConfig() {
 		return rendererConfig;
@@ -277,9 +289,9 @@ public class BundleResourceManager {
 	/**
 	 * Creates bundle resource appender.
 	 * 
-	 * @param cssKeyResource
-	 * @param jsKeyResource
-	 * @return
+	 * @param cssKeyResource the key css for render bundle
+	 * @param jsKeyResource  the key js for render bundle
+	 * @return the bundle resource appender
 	 */
 	protected BundleResourceAutoAppender newBundleResourceAutoAppender(CssResourceReference cssKeyResource,
 			JavaScriptResourceReference jsKeyResource) {
@@ -299,7 +311,7 @@ public class BundleResourceManager {
 	/**
 	 * Lookup components that has resources.
 	 * 
-	 * @return
+	 * @return the classes has {@link BundleResources} or {@link BundleResource}
 	 */
 	@SuppressWarnings("unchecked")
 	private List<Class<? extends Component>> lookupComponents() {
@@ -489,6 +501,12 @@ public class BundleResourceManager {
 			}
 		}
 
+		/**
+		 * Analyze resource dependencies.
+		 * 
+		 * @param dependency
+		 * @param visited
+		 */
 		private void analyze(ResourceDependency dependency, Set<Class<?>> visited) {
 
 			boolean circulardependency = dependency.visited && visited.contains(dependency.clazz);
@@ -584,17 +602,25 @@ public class BundleResourceManager {
 		}
 	}
 
+	/**
+	 * The Config that render bundles.
+	 * 
+	 * @author Ryo Tsunoda
+	 *
+	 */
 	public static enum ResourceBundleRendererConfig {
 		/**
-		 * Add header items yourself.
+		 * Add header items yourself.<br>
 		 */
 		MANUAL_RENDERING,
 		/**
-		 * Renders bundle resource to all pages.
+		 * Renders bundle resource to all pages.<br>
+		 * When pages are instantiated, appends {@link BundleResourceRenderer}.
 		 */
 		ALL_PAGE,
 		/**
-		 * Renders only if the page contains components with bundled resources
+		 * Renders only if the page contains components with bundled resources.
+		 * When reousrce holder components are instantiated, appends {@link BundleResourceRenderer}.
 		 */
 		ONLY_BUNDLE_RESOURCE_HOLDER
 	}
