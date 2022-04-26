@@ -3,8 +3,6 @@ package jp.try0.wicket.resource.bundle;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.application.IComponentInstantiationListener;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 /**
  * Adds bundle resource to {@link Page}.
@@ -14,51 +12,28 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
  */
 public class BundleResourceAutoAppender implements IComponentInstantiationListener {
 
-	private final CssHeaderItem cssBundleRenderKeyHeaderItem;
-
-	private final JavaScriptHeaderItem jsBundleRenderKeyHeaderItem;
-
-	private final BundleResourceManager bundleResourceManager;
-
 	/**
-	 * Constructor
-	 * 
-	 * @param cssBundleRenderKeyHeaderItem render key resource
-	 * @param jsBundleRenderKeyHeaderItem render key resource
+	 * Constructor.
 	 */
-	public BundleResourceAutoAppender(CssHeaderItem cssBundleRenderKeyHeaderItem,
-			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
-		this.cssBundleRenderKeyHeaderItem = cssBundleRenderKeyHeaderItem;
-		this.jsBundleRenderKeyHeaderItem = jsBundleRenderKeyHeaderItem;
-
-		this.bundleResourceManager = BundleResourceManager.get();
+	public BundleResourceAutoAppender() {
 	}
 
 	@Override
 	public void onInstantiation(Component component) {
 
+		BundleResourceManager bundleResourceManager = BundleResourceManager.get();
+		
 		switch (bundleResourceManager.getRendererConfig()) {
 
 		case ALL_PAGE:
 			if (component instanceof Page) {
-				component.add(newBundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem));
+				component.add(newBundleResourceRenderer());
 			}
 			break;
 
 		case ONLY_BUNDLE_RESOURCE_HOLDER:
-
-			CssHeaderItem cssItem = null;
-			JavaScriptHeaderItem jsItem = null;
-
-			if (bundleResourceManager.isCssHolderClass(component.getClass())) {
-				cssItem = cssBundleRenderKeyHeaderItem;
-			}
-			if (bundleResourceManager.isJsHolderClass(component.getClass())) {
-				jsItem = jsBundleRenderKeyHeaderItem;
-			}
-
-			if (cssItem != null || jsItem != null) {
-				BundleResourceRenderer renderer = newBundleResourceRenderer(cssItem, jsItem);
+			if (bundleResourceManager.isResourceHolderClass(component.getClass())) {
+				BundleResourceRenderer renderer = newBundleResourceRenderer();
 				component.add(renderer);
 			}
 			break;
@@ -78,12 +53,9 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 	/**
 	 * Creates renderer.
 	 * 
-	 * @param cssBundleRenderKeyHeaderItem the render key
-	 * @param jsBundleRenderKeyHeaderItem the render key
 	 * @return key resource renderer for resolve bundle resource
 	 */
-	protected BundleResourceRenderer newBundleResourceRenderer(CssHeaderItem cssBundleRenderKeyHeaderItem,
-			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
-		return new BundleResourceRenderer(cssBundleRenderKeyHeaderItem, jsBundleRenderKeyHeaderItem);
+	protected BundleResourceRenderer newBundleResourceRenderer() {
+		return new BundleResourceRenderer();
 	}
 }

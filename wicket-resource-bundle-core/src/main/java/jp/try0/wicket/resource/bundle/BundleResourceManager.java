@@ -129,7 +129,7 @@ public class BundleResourceManager {
 	 * 
 	 * @return render key resource
 	 */
-	public CssResourceReference getCssKeyResource() {
+	public CssResourceReference getCssKeyResourceReference() {
 		if (!cssResoucereferences.isEmpty()) {
 			return cssResoucereferences.get(0);
 		}
@@ -142,12 +142,40 @@ public class BundleResourceManager {
 	 * 
 	 * @return render key resource
 	 */
-	public JavaScriptResourceReference getJsKeyResource() {
+	public JavaScriptResourceReference getJavaScriptKeyResourceReference() {
 		if (!jsResoucereferences.isEmpty()) {
 			return jsResoucereferences.get(0);
 		}
 
 		return null;
+	}
+
+	/**
+	 * Gets header item to render bundole resource.
+	 * 
+	 * @return
+	 */
+	public CssHeaderItem getCssKeyHeaderItem() {
+		CssResourceReference ref = getCssKeyResourceReference();
+		if (ref == null) {
+			return null;
+		}
+
+		return CssHeaderItem.forReference(ref);
+	}
+
+	/**
+	 * Gets header item to render bundole resource.
+	 * 
+	 * @return
+	 */
+	public JavaScriptHeaderItem getJavaScriptKeyHeaderItem() {
+		JavaScriptResourceReference ref = getJavaScriptKeyResourceReference();
+		if (ref == null) {
+			return null;
+		}
+
+		return JavaScriptHeaderItem.forReference(ref);
 	}
 
 	/**
@@ -280,8 +308,7 @@ public class BundleResourceManager {
 
 		if (rendererConfig != ResourceBundleRendererConfig.MANUAL_RENDERING) {
 			// add resource renderer
-			app.getComponentInstantiationListeners()
-					.add(newBundleResourceAutoAppender(getCssKeyResource(), getJsKeyResource()));
+			app.getComponentInstantiationListeners().add(newBundleResourceAutoAppender());
 		}
 
 	}
@@ -289,23 +316,10 @@ public class BundleResourceManager {
 	/**
 	 * Creates bundle resource appender.
 	 * 
-	 * @param cssKeyResource the key css for render bundle
-	 * @param jsKeyResource  the key js for render bundle
 	 * @return the bundle resource appender
 	 */
-	protected BundleResourceAutoAppender newBundleResourceAutoAppender(CssResourceReference cssKeyResource,
-			JavaScriptResourceReference jsKeyResource) {
-
-		CssHeaderItem cssRenderKeyItem = null;
-		if (cssKeyResource != null) {
-			cssRenderKeyItem = CssHeaderItem.forReference(cssKeyResource);
-		}
-		JavaScriptHeaderItem jsRenderKeyItem = null;
-		if (jsKeyResource != null) {
-			jsRenderKeyItem = JavaScriptHeaderItem.forReference(jsKeyResource);
-		}
-
-		return new BundleResourceAutoAppender(cssRenderKeyItem, jsRenderKeyItem);
+	protected BundleResourceAutoAppender newBundleResourceAutoAppender() {
+		return new BundleResourceAutoAppender();
 	}
 
 	/**
@@ -619,8 +633,9 @@ public class BundleResourceManager {
 		 */
 		ALL_PAGE,
 		/**
-		 * Renders only if the page contains components with bundled resources.
-		 * When reousrce holder components are instantiated, appends {@link BundleResourceRenderer}.
+		 * Renders only if the page contains components with bundled resources. When
+		 * reousrce holder components are instantiated, appends
+		 * {@link BundleResourceRenderer}.
 		 */
 		ONLY_BUNDLE_RESOURCE_HOLDER
 	}

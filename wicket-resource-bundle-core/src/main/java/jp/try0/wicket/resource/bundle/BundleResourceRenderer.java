@@ -14,20 +14,10 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
  */
 public class BundleResourceRenderer extends Behavior {
 
-	private final CssHeaderItem cssBundleRenderKeyHeaderItem;
-
-	private final JavaScriptHeaderItem jsBundleRenderKeyHeaderItem;
-
 	/**
-	 * Constructor
-	 * 
-	 * @param cssBundleRenderKeyHeaderItem render key resource
-	 * @param jsBundleRenderKeyHeaderItem render key resource
+	 * Constructor.
 	 */
-	public BundleResourceRenderer(CssHeaderItem cssBundleRenderKeyHeaderItem,
-			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
-		this.cssBundleRenderKeyHeaderItem = cssBundleRenderKeyHeaderItem;
-		this.jsBundleRenderKeyHeaderItem = jsBundleRenderKeyHeaderItem;
+	public BundleResourceRenderer() {
 	}
 
 	@Override
@@ -35,13 +25,45 @@ public class BundleResourceRenderer extends Behavior {
 		super.renderHead(component, response);
 
 		// render bundle resources
+		BundleResourceManager bundleResourceManager = BundleResourceManager.get();
 
-		if (cssBundleRenderKeyHeaderItem != null) {
-			response.render(cssBundleRenderKeyHeaderItem);
+		switch (bundleResourceManager.getRendererConfig()) {
+		case ALL_PAGE: {
+			CssHeaderItem cssRenderKeyItem = bundleResourceManager.getCssKeyHeaderItem();
+			if (cssRenderKeyItem != null) {
+				response.render(cssRenderKeyItem);
+			}
+
+			JavaScriptHeaderItem jsRenderKeyItem = bundleResourceManager.getJavaScriptKeyHeaderItem();
+			if (jsRenderKeyItem != null) {
+				response.render(jsRenderKeyItem);
+			}
+			break;
 		}
 
-		if (jsBundleRenderKeyHeaderItem != null) {
-			response.render(jsBundleRenderKeyHeaderItem);
+		case ONLY_BUNDLE_RESOURCE_HOLDER: {
+
+			if (bundleResourceManager.isCssHolderClass(component.getClass())) {
+				CssHeaderItem cssRenderKeyItem = bundleResourceManager.getCssKeyHeaderItem();
+				if (cssRenderKeyItem != null) {
+					response.render(cssRenderKeyItem);
+				}
+			}
+
+			if (bundleResourceManager.isJsHolderClass(component.getClass())) {
+				JavaScriptHeaderItem jsRenderKeyItem = bundleResourceManager.getJavaScriptKeyHeaderItem();
+				if (jsRenderKeyItem != null) {
+					response.render(jsRenderKeyItem);
+				}
+			}
+			break;
+		}
+
+		case MANUAL_RENDERING:
+			break;
+		default:
+			break;
+
 		}
 
 	}
