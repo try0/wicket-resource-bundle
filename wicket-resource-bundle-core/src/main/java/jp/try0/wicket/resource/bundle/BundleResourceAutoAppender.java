@@ -23,7 +23,8 @@ public class BundleResourceAutoAppender implements IComponentInstantiationListen
 	/**
 	 * Constructor
 	 * 
-	 * @param scanner
+	 * @param cssBundleRenderKeyHeaderItem render key resource
+	 * @param jsBundleRenderKeyHeaderItem render key resource
 	 */
 	public BundleResourceAutoAppender(CssHeaderItem cssBundleRenderKeyHeaderItem,
 			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {

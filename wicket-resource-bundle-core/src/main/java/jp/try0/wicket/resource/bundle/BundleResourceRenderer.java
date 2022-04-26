@@ -21,8 +21,8 @@ public class BundleResourceRenderer extends Behavior {
 	/**
 	 * Constructor
 	 * 
-	 * @param cssBundleRenderKeyHeaderItem
-	 * @param jsBundleRenderKeyHeaderItem
+	 * @param cssBundleRenderKeyHeaderItem render key resource
+	 * @param jsBundleRenderKeyHeaderItem render key resource
 	 */
 	public BundleResourceRenderer(CssHeaderItem cssBundleRenderKeyHeaderItem,
 			JavaScriptHeaderItem jsBundleRenderKeyHeaderItem) {
